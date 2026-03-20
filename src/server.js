@@ -1,6 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
  dotenv.config();
+ console.log("MONGO_URI:", process.env.MONGO_URI);
 import cors from 'cors'
 // import userRoutes from './routes/user.js'
 import connectDB from './config/db.js'
