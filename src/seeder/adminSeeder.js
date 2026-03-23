@@ -1,7 +1,8 @@
 import connectDB from "../config/db.js";
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
-
+import dotenv from "dotenv";
+dotenv.config();
 const userSeed =async ()=>{
     try{
       await connectDB();

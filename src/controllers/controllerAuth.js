@@ -57,51 +57,58 @@ export const register = async (req, res) => {
     }
 };
 
-// Login user
 export const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Not all fields have been entered.' });
-        }
-
-        const user = await User.findOne({ email });
-        console.log("user", user)
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials.' });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials.' });
-        }
-
-        const token = jwt.sign(
-            { id: user._id },             // payload (data you want to store) 
-            process.env.JWT_SECRET,    // secret key
-            { expiresIn: "1d" }
-        );
-        res.json({
-            token,
-            user: {
-                user: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            },
-        }
-        )
-
-        res.status(200).json({
-            message: "Login successful",
-            user
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Not all fields have been entered.",
+      });
     }
-}
+
+    // Check user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid credentials.",
+      });
+    }
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid credentials.",
+      });
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    
+    return res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,     
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      error: err.message,
+    });
+  }
+};
 export const getRoles = async (req, res) => {
     try {
         const users = await User.find(); // fetch all users

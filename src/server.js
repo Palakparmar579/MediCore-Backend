@@ -15,7 +15,7 @@ app.use(express.json())
 
 
 // Add cors  (Frontend (React / Angular etc.) ko backend se baat karne dena.)
-app.use(cors());  
+app.use(cors());   //Cross-Origin Resource Sharing
 
 //Step 6: Connect MongoDB
 
