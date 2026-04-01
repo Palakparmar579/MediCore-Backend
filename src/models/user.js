@@ -24,15 +24,19 @@ const userSchema=new mongoose.Schema({
     password:{
         type:String,
         trim:true,
-        minlength:8,
+        minlength:10,
         required:true
     },
     role:{
         type:String,
         enum:["admin","patient","doctor","nurse"],
         default:"admin"
+    },
+    status:{
+        type:String,
+        enum:["active","inactive"],
+        default:"active"
     }
-
 },{
     timestamps:true
 })
