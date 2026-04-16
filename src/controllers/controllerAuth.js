@@ -53,7 +53,7 @@ export const register = async (req, res) => {
     const passwordHash = await bcrypt.hash(generatePass, 10);
 
     const savedUser = await User.create({
-      role: role || "patient", // ✅ fallback
+      role: role || "patient",
       name,
       age,
       email,
@@ -178,7 +178,7 @@ if(user.status==="inactive"){
 
 export const getRoles = async (req, res) => {
     try {
-        const users = await User.find(); // fetch all users
+        const users = await User.find(); 
         res.status(200).json(users);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -188,7 +188,7 @@ export const getRoles = async (req, res) => {
 export const getRolesById = async (req, res) => {
     const {id}=req.params
     try {
-        const users = await User.findById(id); // fetch all users
+        const users = await User.findById(id); 
         res.status(200).json(users);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -211,7 +211,7 @@ export const editUser = async (req, res) => {
                 age,
                 description
             },
-            { new: true } // returns updated document
+            { new: true } 
         );
 
         if (!updatedUser) {
@@ -245,27 +245,51 @@ export const deleteUser=async(req,res)=>{
 }
 
 // Pagination api
-export const pagination=async(req,res)=>{
-  try{
-const page=parseInt(req.query.page);
-const limit=parseInt(req.query.limit);
-const skip=(page-1)*limit;
-const users=await User.find({role:{$ne:"admin"}}).skip(skip).limit(limit).sort({createdAt:-1})
-const total=await User.countDocuments({role:{$ne:"admin"}})
-const totalPages=Math.ceil(total/limit)
-return res.json({
-  page,
-  limit,
-  total,
-  totalPages,
-  data:users
-})
+export const pagination = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const role = req.query.role || "all";
+    const search = req.query.search || "";
+
+    const skip = (page - 1) * limit;
+
+    let filter = {
+      role: { $ne: "admin" },
+    };
+
+    
+    if (role !== "all") {
+      filter.role = role;
+    }
+
+   
+    if (search.trim() !== "") {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const users = await User.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    const total = await User.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+
+    return res.json({
+      page,
+      limit,
+      total,
+      totalPages,
+      data: users,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
-  catch(error){
-   console.error(error);
-   return res.status(500).json({ message: error.message });
-  }
-}
+};
 
 
 export const getDashboardStats=async(req,res)=>{
@@ -273,8 +297,10 @@ export const getDashboardStats=async(req,res)=>{
    const doctorCount=await User.countDocuments({role:"doctor"});
     const nurseCount=await User.countDocuments({role:"nurse"})
      const patientCount=await User.countDocuments({role:"patient"})
+      const totalCount=await User.countDocuments({role:{$ne:"admin"}})
 
     return res.json({
+      total:totalCount,
       doctor:doctorCount,
       nurse: nurseCount,
       patient:patientCount

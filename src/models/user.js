@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+
 const userSchema=new mongoose.Schema({
     name:{
         type:String,
@@ -36,7 +36,7 @@ const userSchema=new mongoose.Schema({
         type:String,
         enum:["active","inactive"],
         default:"active"
-    }
+    },
 },{
     timestamps:true
 })

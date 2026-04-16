@@ -7,6 +7,11 @@ import cors from 'cors'
 import connectDB from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
 import uploadRoutes from './routes/uploadRoute.js'
+import requestRoutes from './routes/requestRoutes.js'
+import departmentRoutes from './routes/departmentRoutes.js'
+import appointmentRoutes from './routes/Patient/appointmentRoutes.js'
+import assignDeptRoutes from './routes/assignDeptRoutes.js'
+import DoctorAppointmentRoutes from './routes/Doctor/DoctorAppointmentRoutes.js'
 // Step 1 : Config dotenv(.env file is activated in this)
  // Step 2:  create express file()
  const app=express()
@@ -27,6 +32,15 @@ connectDB();
  // Step 7: connect routes
 app.use("/api/auth",authRoutes)
 app.use("/api/upload",uploadRoutes)
+app.use("/api/request",requestRoutes)
+app.use("/api/department",departmentRoutes)
+app.use("/api/appointmentPatient", appointmentRoutes);
+app.use("/api/assignment",assignDeptRoutes)
+
+// Doctor 
+app.use("/api/doctorAppointment",DoctorAppointmentRoutes)
+
+
 //Step 8: Test Route
  app.get("/",(req,res)=>{
      res.send("Backend Running Successfully")
