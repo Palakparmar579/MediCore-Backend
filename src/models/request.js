@@ -16,7 +16,7 @@ const userSchema=new mongoose.Schema({
         type:String
        },
         password: {
-      type: String, // will be set after accept
+      type: String, 
     },
 },{
 timestamp:true}

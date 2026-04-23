@@ -16,7 +16,9 @@ const userSeed =async ()=>{
       await User.create({
         name:"Palak",
         email:"admin043@yopmail.com",
-        password:hasPassword
+        password:hasPassword,
+        age:"22",
+        description:"Hii My name is Palak"
       });
       console.log("Admin created successfully")
       process.exit()

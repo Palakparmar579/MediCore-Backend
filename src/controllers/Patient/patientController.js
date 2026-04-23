@@ -1,5 +1,6 @@
 import Appointment from '../../models/Patient/appointment.js'
 import DoctorDep from '../../models/department.js';
+import User from '../../models/user.js'
 // POST API
 
 export const register =  async (req, res) => {
@@ -68,4 +69,40 @@ return res.json({
    return res.status(500).json({ message: error.message });
   }
 }
+
+
+// Profile Upload api
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; 
+    const {name,phone,dob,address} = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name: name?.trim(), 
+       phone: phone?.trim(),
+       dob:dob?.trim(),
+       address:address?.trim()
+       
+       },
+
+      { new: true }
+    ).select("-password");
+
+ 
+    res.status(200).json({
+  success: true,
+  user
+});
+
+console.log(user)
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
 

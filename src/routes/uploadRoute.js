@@ -1,8 +1,15 @@
 import express from "express"
-//import upload from "../middleware/upload.js"
+
 //import { multiUpload } from "../middleware/upload.js";
-import { singleUpload } from "../middleware/upload.js";
+import upload from "../middleware/upload.js";
+import { protect } from "../middleware/authMiddleware.js";
+import { profileUpload } from "../controllers/ProfileUpload.js";
+
+
 const router=express.Router();
+
+
+router.post("/image", protect, upload.single("image"), profileUpload);
 
 // Post api single upload
 
@@ -16,7 +23,7 @@ const router=express.Router();
 //      catch(err){
 //                 res.status(500).json({error:err.message})
 //             }
-// })
+//})
 
 
 //-----------------------------------Storing multiple images ---------------------------------
@@ -36,16 +43,16 @@ const router=express.Router();
 
 //-------------------------Upload single video-----------------------------------------
 
-router.post('/',singleUpload,async(req,res)=>{
-     try{
-        res.json({
-            message:"video uploaded successfully",
-            videoUrl:req.file.path
-        })
-     }
-     catch(err){
-        res.status(500).json({error:err.message})
-     }
-})
+// router.post('/',singleUpload,async(req,res)=>{
+//      try{
+//         res.json({
+//             message:"video uploaded successfully",
+//             videoUrl:req.file.path
+//         })
+//      }
+//      catch(err){
+//         res.status(500).json({error:err.message})
+//      }
+// })
 
 export default router;

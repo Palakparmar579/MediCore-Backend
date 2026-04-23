@@ -1,39 +1,60 @@
 import AssignDept from "../models/AssignDept.js";
+import { assignEmailTemplate } from "../../utils/emailTemplates.js";
+import User from "../models/user.js";
+import sendEmail from '../services/emailService.js';
 
-export const addAssignedDept=async(req,res)=>{
-    try{
-       const {department,deptNum,doctors,nurses}=req.body;
-       if (!department||!deptNum||!doctors||!nurses) {
+export const addAssignedDept = async (req, res) => {
+  try {
+    const { department, deptNum, doctors, nurses } = req.body;
+
+    if (!department || !deptNum || !doctors || !nurses) {
       return res.status(400).json({
-        message: "All field are required!!",
+        message: "All fields are required!!",
       });
     }
-    const existingDept=await AssignDept.findOne({department:department})
-      if(existingDept){
-        return res.status(409).json({message:"This department is already assigned to someone!!"})
-      }
-  
-      const newAssignment=await AssignDept.create({
-        department,
-        deptNum,
-        doctors,
-        nurses
-      })
-      res.status(200).json(newAssignment)
+
+    const existingDept = await AssignDept.findOne({ department });
+    if (existingDept) {
+      return res.status(409).json({
+        message: "This department is already assigned!",
+      });
     }
-    catch(err){
-  res.status(500).json({ message: err.message });
+
+    const newAssignment = await AssignDept.create({
+      department,
+      deptNum,
+      doctors,
+      nurses,
+    });
+
+   
+    const assignedDoctors = await User.find({ _id: { $in: doctors } });
+    const assignedNurses = await User.find({ _id: { $in: nurses } });
+
+    const allUsers = [...assignedDoctors, ...assignedNurses];
+
+   
+    for (let user of allUsers) {
+      await sendEmail({
+        to: user.email,
+       subject: "Department Assignment - Medicore",
+       html: assignEmailTemplate(user.name, "Your Department")
+    });
     }
-}
+
+    res.status(200).json(newAssignment);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // Get api
-
-
 
 export const getAssignment = async (req, res) => {
   try {
     const data = await AssignDept.find()
-      .populate("department")   // 🔥 no match filter
+      .populate("department")   
       .populate("doctors", "name")
       .populate("nurses", "name");
 

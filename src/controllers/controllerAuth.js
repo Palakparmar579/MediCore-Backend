@@ -2,8 +2,9 @@
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+import AssignDept from '../models/AssignDept.js';
 import sendEmail from '../services/emailService.js';
-
+import { resetPasswordTemplate,accountCreatedTemplate} from "../../utils/emailTemplates.js";
 // Generate Random password
 
 
@@ -33,15 +34,16 @@ const generateRandomPass = (length = 10) => {
 
 // Register a new user
 export const register = async (req, res) => {
+  console.log("REQ BODY:", req.body);
   try {
-    const { name, email, role, age, description } = req.body;
-
-    if (!name || !email || !role || !age || !description) {
+    const { name, email, role, age,phone,experience, address, bio,department,deptNum,dob } = req.body;
+  
+    if (!name || !email || !role || !age ) {
       return res.status(400).json({
         message: "Not all fields have been entered.",
       });
     }
-
+    
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -58,19 +60,39 @@ export const register = async (req, res) => {
       age,
       email,
       password: passwordHash,
-      description,
+      phone,
+      experience,
+      address,
+      bio,
+     department,
+     deptNum
     });
 
-    // ✅ FIX: email crash safe
+
+     if (role === "doctor" || role === "nurse") {
+      const assignDept = await AssignDept.findOne({ department });
+
+      if (assignDept) {
+        if (role === "doctor") {
+          assignDept.doctors.push(savedUser._id);
+        } else if (role === "nurse") {
+          assignDept.nurses.push(savedUser._id);
+        }
+        await assignDept.save();
+
+        await User.findByIdAndUpdate(savedUser._id, {
+      department: assignDept._id,
+      deptNum: assignDept.deptNum,
+    });
+      }
+    }
+  
     try {
       await sendEmail({
-        to: email,
-        subject: "Your account password",
-        html: `<h1>Hello ${name}</h1>
-               <p>Your account has been created</p>
-               <p>Email: ${email}</p>
-               <p>Password: ${generatePass}</p>`,
-      });
+  to: email,
+  subject: "Your MediCore Account Details",
+  html: accountCreatedTemplate(name, email, generatePass),
+});
     } catch (err) {
       console.log("Email error:", err.message);
     }
@@ -100,13 +122,11 @@ export const resendPass=async(req,res)=>{
     });
 
     try{
-     await sendEmail({
-        to: user.email,
-        subject: "Your account password",
-        html: `<h1>Hello ${user.name}</h1>
-               <p>Your password has been reset by admin.</p>
-               <p><b>New Password:</b> ${newPassGenerate}</p>`,
-      });
+   await sendEmail({
+  to: user.email,
+  subject: "Your account password",
+ html: resetPasswordTemplate(user.name, newPassGenerate),
+});
     }
     catch(error){
       res.status(500).json({message:error.message})
@@ -146,7 +166,7 @@ if(user.status==="inactive"){
       });
     }
 
-    // ✅ FIX: include role in token
+   
     const token = jwt.sign(
       {
         id: user._id,
@@ -174,7 +194,37 @@ if(user.status==="inactive"){
   }
 };
 
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; 
+    const {name ,phone,experience, address, bio } = req.body;
 
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name: name?.trim(), 
+       phone: phone?.trim(),
+       experience:experience?.trim(),
+       
+       address:address,
+       bio:bio
+       },
+
+      { new: true }
+    ).select("-password");
+
+ 
+    res.status(200).json({
+  success: true,
+  user
+});
+
+
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 export const getRoles = async (req, res) => {
     try {
@@ -196,11 +246,36 @@ export const getRolesById = async (req, res) => {
 };
 
 
+
+
+// For whole data of particular role
+export const getMyProfile = async (req, res) => {
+  try {
+const user = await User.findById(req.user.id)
+  .select("-password");   
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+  
+    res.json({
+      success: true,
+      data: user,
+      
+    });
+
+  } catch (error) {
+  
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+ // 
+
 export const editUser = async (req, res) => {
     try {
 
          const { id } = req.params;
-        const { name, email, role, age, description } = req.body;
+        const { name, email, role, age} = req.body;
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
@@ -208,8 +283,8 @@ export const editUser = async (req, res) => {
                 name,
                 email,
                 role,
-                age,
-                description
+                age
+              
             },
             { new: true } 
         );
@@ -327,4 +402,18 @@ export const toggleUserStatus=async(req,res)=>{
   catch(error){
    return res.status(500).json({message:error.message})
   }
+}
+
+
+// Token verification
+
+export const tokenVerify=async(req,res)=>{
+  const token =req.headers.authorization.split(" ")[1]
+try{
+  jwt.verify(token,process.env.JWT_SECRET)
+  res.json({valid:true})
+}
+catch(error){
+  res.json({valid:false})
+}
 }

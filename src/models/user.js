@@ -10,11 +10,7 @@ const userSchema=new mongoose.Schema({
         type:Number,
         required:true
     },
-       description:{
-        type:String,
-        trim:true,
-        required:true
-    },
+     
     email:{
         type:String,
         unique:true,
@@ -37,10 +33,38 @@ const userSchema=new mongoose.Schema({
         enum:["active","inactive"],
         default:"active"
     },
+    phone:{
+        type:String 
+    },
+    experience:{
+    type:String
+    },
+    address:{
+        type:String
+    },
+    bio:{
+        type:String
+    },
+    profileImage: {
+  type: String,
+  default: ""
+},
+department: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "DoctorDepartment",  
+  default: null
+},
+deptNum: {
+  type: Number,
+  default: null
+},
+ dob: {
+    type: Date,
+  },
 },{
     timestamps:true
 })
-// ✅ Model Create
+
 
 const User=mongoose.model("User",userSchema)
 export default User;

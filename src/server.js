@@ -5,12 +5,13 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 // import userRoutes from './routes/user.js'
 import connectDB from './config/db.js'
-import authRoutes from './routes/authRoutes.js'
+
 import uploadRoutes from './routes/uploadRoute.js'
 import requestRoutes from './routes/requestRoutes.js'
 import departmentRoutes from './routes/departmentRoutes.js'
 import appointmentRoutes from './routes/Patient/appointmentRoutes.js'
 import assignDeptRoutes from './routes/assignDeptRoutes.js'
+import authRoutes from './routes/authRoutes.js'
 import DoctorAppointmentRoutes from './routes/Doctor/DoctorAppointmentRoutes.js'
 // Step 1 : Config dotenv(.env file is activated in this)
  // Step 2:  create express file()
@@ -34,8 +35,11 @@ app.use("/api/auth",authRoutes)
 app.use("/api/upload",uploadRoutes)
 app.use("/api/request",requestRoutes)
 app.use("/api/department",departmentRoutes)
-app.use("/api/appointmentPatient", appointmentRoutes);
+
 app.use("/api/assignment",assignDeptRoutes)
+
+//Patient 
+app.use("/api/appointmentPatient", appointmentRoutes);
 
 // Doctor 
 app.use("/api/doctorAppointment",DoctorAppointmentRoutes)
