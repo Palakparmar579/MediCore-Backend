@@ -24,11 +24,29 @@ app.use(express.json())
 //app.use(cors());   //Cross-Origin Resource Sharing
 
 
+const allowedOrigins = [
+  "https://medi-core-front-end043.vercel.app/"
+];
+
+// ✅ CORS config
 app.use(cors({
-  origin: 'https://medi-core-front-end043.vercel.app/', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
+
+app.options("/{*path}", cors());
+
+
 
 //Step 6: Connect MongoDB
 
