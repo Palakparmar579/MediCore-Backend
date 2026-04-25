@@ -21,7 +21,14 @@ app.use(express.json())
 
 
 // Add cors  (Frontend (React / Angular etc.) ko backend se baat karne dena.)
-app.use(cors());   //Cross-Origin Resource Sharing
+//app.use(cors());   //Cross-Origin Resource Sharing
+
+
+app.use(cors({
+  origin: 'https://medi-core-front-end043.vercel.app/', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
 //Step 6: Connect MongoDB
 
