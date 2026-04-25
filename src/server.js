@@ -25,7 +25,7 @@ app.use(express.json())
 
 
 const allowedOrigins = [
-  "https://medi-core-front-end043.vercel.app/"
+  "https://medi-core-front-end043.vercel.app"
 ];
 
 // ✅ CORS config
