@@ -2,6 +2,7 @@ import UserRequest from "../models/request.js";
 import User from "../models/user.js";
 import bcrypt from 'bcrypt';
 import sendEmail from "../services/emailService.js";
+import {rejectRequestTemplate , acceptRequestTemplate} from '../../utils/emailTemplates.js'
 export const forgetRequest=async(req,res)=>{
    try{
      const {email}=req.body;
@@ -90,20 +91,16 @@ export const updateRequest=async(req,res)=>{
             await sendEmail({
                to:request.email,
                subject:"Your Account Approved",
-               html:`<h3>Your request has been approved</h3>
-      <p>Email: ${request.email}</p>
-      <p>Password: ${generatePass}</p>`
+               html:acceptRequestTemplate(request.email,generatePass)
+               
             })
         }
         else if(action==="rejected"){
             await sendEmail({
                     to: request.email,
     subject: "Your Request Was Not Approved",
-    html: `
-      <h3>Request Not Approved</h3>
-      <p>Unfortunately, your password reset request has been rejected.</p>
-      <p>Please contact support if you think this is a mistake.</p>
-    `
+     html:rejectRequestTemplate(request.email)
+    
             })
             
         }

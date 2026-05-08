@@ -26,7 +26,7 @@ const userSchema=new mongoose.Schema({
     role:{
         type:String,
         enum:["admin","patient","doctor","nurse"],
-        default:"admin"
+        default:"patient"
     },
     status:{
         type:String,
@@ -49,15 +49,7 @@ const userSchema=new mongoose.Schema({
   type: String,
   default: ""
 },
-department: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "DoctorDepartment",  
-  default: null
-},
-deptNum: {
-  type: Number,
-  default: null
-},
+
  dob: {
     type: Date,
   },

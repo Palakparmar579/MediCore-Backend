@@ -172,3 +172,20 @@ export const getDashboardStats=async(req,res)=>{
    return res.status(500).json({message:error.message})
   }
 }
+
+export const getAllDepartment = async (req, res) => {
+  try {
+    const departments = await DoctorDep.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      message: "Departments fetched successfully",
+      data: departments,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message || "Server Error",
+    });
+  }
+};

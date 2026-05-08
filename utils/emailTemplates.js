@@ -192,3 +192,145 @@ export const assignEmailTemplate = (name, departmentName) => {
   </div>
   `;
 };
+
+export const rejectRequestTemplate = (name) => {
+  return `
+  <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+    
+    <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+      
+      <!-- Header -->
+      <div style="background: #00304e; padding: 16px; text-align: center;">
+        <h2 style="color: #ffffff; margin: 0;">MediCore</h2>
+      </div>
+
+      <!-- Body -->
+      <div style="padding: 20px; color: #333;">
+        <h3>Hello ${name},</h3>
+        
+        <p style="font-size: 14px;">
+          Unfortunately, your password reset request has been rejected.
+        </p>
+
+        <p style="font-size: 13px; color: #555;">
+          Please contact support if you think this is a mistake.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="background: #f9fafb; padding: 12px; text-align: center;">
+        <p style="font-size: 12px; color: #888;">
+          © ${new Date().getFullYear()} MediCore
+        </p>
+      </div>
+
+    </div>
+  </div>
+  `;
+};
+
+export const acceptRequestTemplate = (name, newPassGenerate) => {
+  return `
+  <div style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+    
+    <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+      
+      <!-- Header -->
+      <div style="background: #00304e; padding: 16px; text-align: center;">
+        <img 
+          src="https://res.cloudinary.com/dxww5eqxe/image/upload/v1776347014/whiteLogo1_jycnm4.png" 
+          style="height: 40px; margin-bottom: 8px;"
+        />
+        <h2 style="color: #ffffff; margin: 0;">MediCore</h2>
+      </div>
+
+      <!-- Body -->
+      <div style="padding: 20px; color: #333;">
+        <h3 style="margin-top: 0;">Hello ${name},</h3>
+        
+        <p style="font-size: 14px; line-height: 1.6;">
+          Your password reset request has been <strong style="color: green;">approved</strong> by the admin.
+        </p>
+
+        <div style="background: #f1f5f9; padding: 12px 16px; border-radius: 6px; margin: 15px 0;">
+          <p style="margin: 0; font-size: 14px;">
+            <strong>New Password:</strong> 
+            <span style="color: #00304e; font-weight: bold;">
+              ${newPassGenerate}
+            </span>
+          </p>
+        </div>
+
+        <p style="font-size: 13px; color: #555;">
+You can now log in using this password. Please keep it secure and do not share it with anyone.        </p>
+
+        <!-- Button -->
+        <div style="text-align: center; margin-top: 20px;">
+          <a 
+            href="http://localhost:5173/" 
+            style="background: #00304e; color: #ffffff; padding: 10px 18px; text-decoration: none; border-radius: 6px; font-size: 14px; display: inline-block;"
+          >
+            Login to MediCore
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="background: #f9fafb; padding: 12px; text-align: center; border-top: 1px solid #eee;">
+        
+        <p style="font-size: 12px; color: #888; margin: 0;">
+          © ${new Date().getFullYear()} MediCore. All rights reserved.
+        </p>
+
+        <p style="font-size: 12px; margin-top: 5px;">
+          <a href="http://localhost:5173/" style="color: #00304e; text-decoration: none;">
+            http://localhost:5173/
+          </a>
+        </p>
+
+      </div>
+
+    </div>
+  </div>
+  `;
+};
+
+
+export const reportTemplate = (name, reportData) => {
+  return `
+  <div style="font-family: Arial; max-width:600px; margin:auto; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08)">
+    
+    <div style="background:#00304e; color:white; padding:15px; text-align:center;">
+      <h2>MediCore - Medical Report</h2>
+    </div>
+
+    <div style="padding:20px; color:#333;">
+      <h3>Hello ${name},</h3>
+
+      <p>Your medical report has been generated. Details are below:</p>
+
+      <div style="background:#f1f5f9; padding:15px; border-radius:8px; margin-top:10px;">
+        
+        <p><strong>Doctor Note:</strong><br/>${reportData.doctorNote}</p>
+
+        <p><strong>Medicines:</strong></p>
+        <ul>
+          ${reportData.medicines
+            .map((m) => `<li>${m.name} - ${m.dosage}</li>`)
+            .join("")}
+        </ul>
+
+        <p><strong>Follow Up:</strong><br/>${reportData.followUp}</p>
+      </div>
+
+      <p style="margin-top:15px;">Take care and follow the instructions.</p>
+    </div>
+
+    <div style="background:#f5f5f5; padding:10px; text-align:center; font-size:12px;">
+      © ${new Date().getFullYear()} MediCore
+    </div>
+
+  </div>
+  `;
+};

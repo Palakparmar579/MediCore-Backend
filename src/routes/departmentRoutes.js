@@ -1,5 +1,5 @@
 import express from "express";
-import { editUser, getUser, register ,deleteUser,toggleUserStatus,pagination,getDashboardStats} from "../controllers/controllerDepartment.js";
+import { editUser, getUser, register ,deleteUser,toggleUserStatus,pagination,getDashboardStats,getAllDepartment} from "../controllers/controllerDepartment.js";
 import {protect }from "../middleware/authMiddleware.js";
 
 const router=express.Router();
@@ -10,4 +10,5 @@ router.delete("/deleteDep/:id",deleteUser);
 router.put("/toggleStatus/:id",protect,toggleUserStatus)
 router.get("/pagination",pagination)
 router.get("/dashBoardStats",getDashboardStats)
+router.get("/getDepartment",getAllDepartment)
 export default router;

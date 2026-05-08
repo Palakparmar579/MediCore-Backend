@@ -34,9 +34,9 @@ const generateRandomPass = (length = 10) => {
 
 // Register a new user
 export const register = async (req, res) => {
-  console.log("REQ BODY:", req.body);
+ 
   try {
-    const { name, email, role, age,phone,experience, address, bio,department,deptNum,dob } = req.body;
+    const { name, email, role, age,phone,experience, address, bio,department,deptNum,dob} = req.body;
   
     if (!name || !email || !role || !age ) {
       return res.status(400).json({
@@ -65,7 +65,8 @@ export const register = async (req, res) => {
       address,
       bio,
      department,
-     deptNum
+     deptNum,
+     status:"active"
     });
 
 
@@ -107,37 +108,43 @@ export const register = async (req, res) => {
 
 // Resend Password 
 
-export const resendPass=async(req,res)=>{
+export const resendPass = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
 
-  try{
-    const user=await User.findById(req.params.id);
-    if(!user){
-    return  res.status(404).json({message:"User not found"})
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-    const newPassGenerate=generateRandomPass(10)
+
+    const newPassGenerate = generateRandomPass(10);
     const passwordHash = await bcrypt.hash(newPassGenerate, 10);
-    
-     await User.findByIdAndUpdate(req.params.id, {
+
+    await User.findByIdAndUpdate(req.params.id, {
       password: passwordHash,
     });
 
-    try{
-   await sendEmail({
-  to: user.email,
-  subject: "Your account password",
- html: resetPasswordTemplate(user.name, newPassGenerate),
-});
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: "Your account password",
+        html: resetPasswordTemplate(user.name, newPassGenerate),
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Password updated but email failed",
+      });
     }
-    catch(error){
-      res.status(500).json({message:error.message})
-    }
-    res.status(200).json({message:"Password sent successfully"})
-    
+
+    return res.status(200).json({
+      message: "Password sent successfully",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+    });
   }
-  catch(error){
-     res.status(500).json({message:error.message})
-  }
-}
+};
 
 // Login--------------------------------------------
 export const login = async (req, res) => {
@@ -331,6 +338,7 @@ export const pagination = async (req, res) => {
 
     let filter = {
       role: { $ne: "admin" },
+      
     };
 
     
@@ -343,6 +351,9 @@ export const pagination = async (req, res) => {
       filter.$or = [
         { name: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
+        {status:{$regex:  search ,$options: "i"}},
+        {role:{$regex:search,$options:"i"}},
+        { age: isNaN(search) ? undefined : Number(search) }, 
       ];
     }
 

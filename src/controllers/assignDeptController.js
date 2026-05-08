@@ -64,6 +64,23 @@ export const getAssignment = async (req, res) => {
   }
 };
 
+export const getDoctorsByDepartment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const data = await AssignDept.findOne({ department: departmentId })
+      .populate("doctors", "name");
+
+    if (!data) {
+      return res.status(404).json({ message: "No doctors found" });
+    }
+
+    res.status(200).json(data.doctors);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 //Edit api
 
 export const editAssignment = async (req, res) => {

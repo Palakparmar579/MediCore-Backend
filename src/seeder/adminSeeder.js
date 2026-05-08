@@ -18,7 +18,8 @@ const userSeed =async ()=>{
         email:"admin043@yopmail.com",
         password:hasPassword,
         age:"22",
-        description:"Hii My name is Palak"
+        description:"Hii My name is Palak",
+        role:"admin"
       });
       console.log("Admin created successfully")
       process.exit()
