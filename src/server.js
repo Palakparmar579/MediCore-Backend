@@ -27,28 +27,30 @@ app.use(express.json())
 
 
 const allowedOrigins = [
-  "https://medi-core-front-end043.vercel.app"
+  "https://medi-core-dkui.vercel.app"
 ];
 
-//  CORS config
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-//     if (allowedOrigins.includes(origin)) {
-//       return callback(null, true);
-//     } else {
-//       return callback(new Error(`CORS blocked for origin: ${origin}`));
-//     }
-//   },
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true
-// }));
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
 
-// app.options("/{*path}", cors());
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
-app.use(cors())
+app.options("*", cors());
+
+// app.use(cors())
 
 //Step 6: Connect MongoDB
 
